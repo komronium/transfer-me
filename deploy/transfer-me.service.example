@@ -1,0 +1,16 @@
+[Unit]
+Description=transfer-me
+After=network.target
+
+[Service]
+Type=simple
+User=www-data
+WorkingDirectory=/opt/transfer-me
+Environment=ADMIN_TOKEN=change-me-to-a-long-random-value
+Environment=STORAGE_DIR=/opt/transfer-me/storage
+Environment=DATA_DIR=/opt/transfer-me/data
+ExecStart=/opt/transfer-me/.venv/bin/uvicorn app.main:app --host 127.0.0.1 --port 8000 --workers 2
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target

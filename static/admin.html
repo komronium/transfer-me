@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>transfer-me &mdash; admin</title>
+  <link rel="stylesheet" href="/assets/css/style.css">
+  <style>
+    body { align-items: flex-start; padding-top: 48px; }
+  </style>
+</head>
+<body>
+  <div class="wrap admin-wrap">
+    <div class="top-row">
+      <h1 class="title" style="margin:0;">Files</h1>
+      <button id="refreshBtn" class="secondary">Refresh</button>
+    </div>
+    <div class="card">
+      <input id="tokenInput" class="token-input" type="password" placeholder="Admin token">
+      <div id="status" class="muted"></div>
+      <table class="files" id="filesTable" hidden>
+        <thead>
+          <tr>
+            <th>Filename</th>
+            <th>Size</th>
+            <th>Uploaded</th>
+            <th>Expires</th>
+            <th>Downloads</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="filesBody"></tbody>
+      </table>
+    </div>
+  </div>
+  <script src="/assets/js/admin.js"></script>
+</body>
+</html>

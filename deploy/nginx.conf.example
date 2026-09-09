@@ -1,0 +1,52 @@
+# Example Nginx reverse proxy config for transfer-me, deployed behind
+# uvicorn/gunicorn running on 127.0.0.1:8000.
+#
+# Copy to /etc/nginx/sites-available/transfer-me, adjust server_name and
+# TLS cert paths, then symlink into sites-enabled and reload nginx.
+
+server {
+    listen 80;
+    server_name send.example.uz;
+
+    # Chunks are capped server-side (MAX_CHUNK_SIZE_MB, default 64MB) so this
+    # only needs to cover a single chunk request, not the whole file.
+    client_max_body_size 80m;
+
+    # Large uploads over slow connections need generous timeouts.
+    proxy_connect_timeout 60s;
+    proxy_send_timeout    120s;
+    proxy_read_timeout    120s;
+
+    location / {
+        proxy_pass http://127.0.0.1:8000;
+        proxy_http_version 1.1;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+
+        # Don't buffer the response to disk; stream downloads straight through.
+        proxy_buffering off;
+    }
+}
+
+# --- with TLS (recommended), e.g. via certbot ---
+# server {
+#     listen 443 ssl http2;
+#     server_name send.example.uz;
+#     ssl_certificate     /etc/letsencrypt/live/send.example.uz/fullchain.pem;
+#     ssl_certificate_key /etc/letsencrypt/live/send.example.uz/privkey.pem;
+#     client_max_body_size 80m;
+#     proxy_connect_timeout 60s;
+#     proxy_send_timeout 120s;
+#     proxy_read_timeout 120s;
+#     location / {
+#         proxy_pass http://127.0.0.1:8000;
+#         proxy_http_version 1.1;
+#         proxy_set_header Host $host;
+#         proxy_set_header X-Real-IP $remote_addr;
+#         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+#         proxy_set_header X-Forwarded-Proto $scheme;
+#         proxy_buffering off;
+#     }
+# }
