@@ -4,13 +4,13 @@ After=network.target
 
 [Service]
 Type=simple
-User=www-data
-WorkingDirectory=/opt/transfer-me
-Environment=ADMIN_TOKEN=change-me-to-a-long-random-value
-Environment=STORAGE_DIR=/opt/transfer-me/storage
-Environment=DATA_DIR=/opt/transfer-me/data
-ExecStart=/opt/transfer-me/.venv/bin/uvicorn app.main:app --host 127.0.0.1 --port 8000 --workers 2
+User=transfer
+Group=transfer
+WorkingDirectory=/var/www/transfer-me
+EnvironmentFile=/var/www/transfer-me/.env
+ExecStart=/var/www/transfer-me/.venv/bin/uvicorn app.main:app --host 127.0.0.1 --port 8000 --workers 2
 Restart=on-failure
+RestartSec=3
 
 [Install]
 WantedBy=multi-user.target
