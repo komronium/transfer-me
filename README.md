@@ -45,7 +45,7 @@ uvicorn app.main:app --reload
 | `MAX_FILE_SIZE_GB` | `10` | Max accepted upload size |
 | `MAX_CHUNK_SIZE_MB` | `64` | Hard cap on a single chunk request |
 | `CHUNK_SIZE_MB` | `16` | Chunk size the server hands the client at init |
-| `DEFAULT_EXPIRY_HOURS` | `24` | How long a link stays valid |
+| `DEFAULT_EXPIRY_HOURS` | `0` | How long a file is kept; `0` = kept forever until deleted via `/admin` |
 | `ABANDONED_UPLOAD_HOURS` | `48` | Purge stale in-progress uploads after this |
 | `CLEANUP_INTERVAL_SECONDS` | `600` | How often the sweep runs |
 | `INIT_RATE_LIMIT_PER_MINUTE` | `10` | Per-IP limit on starting new uploads |

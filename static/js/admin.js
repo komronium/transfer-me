@@ -21,28 +21,28 @@
   async function loadFiles() {
     const token = tokenInput.value.trim();
     if (!token) {
-      statusEl.textContent = "Enter the admin token to view files.";
+      statusEl.textContent = "Ko'rish uchun admin tokenni kiriting.";
       table.hidden = true;
       return;
     }
     localStorage.setItem(TOKEN_KEY, token);
-    statusEl.textContent = "Loading…";
+    statusEl.textContent = "Yuklanmoqda…";
 
     const res = await fetch("/api/admin/files", { headers: { "X-Admin-Token": token } });
     if (res.status === 403) {
-      statusEl.textContent = "Invalid admin token.";
+      statusEl.textContent = "Admin token noto'g'ri.";
       table.hidden = true;
       return;
     }
     if (!res.ok) {
-      statusEl.textContent = `Error loading files (${res.status})`;
+      statusEl.textContent = `Xatolik (${res.status})`;
       table.hidden = true;
       return;
     }
 
     const files = await res.json();
     if (files.length === 0) {
-      statusEl.textContent = "No files uploaded yet.";
+      statusEl.textContent = "Hali fayl yuklanmagan.";
       table.hidden = true;
       return;
     }
@@ -56,7 +56,7 @@
       const tdName = document.createElement("td");
       tdName.className = "filename";
       tdName.textContent = f.filename;
-      tdName.title = f.filename;
+      tdName.title = f.path;
 
       const tdSize = document.createElement("td");
       tdSize.textContent = fmtBytes(f.size);
@@ -64,26 +64,42 @@
       const tdUploaded = document.createElement("td");
       tdUploaded.textContent = new Date(f.uploaded_at).toLocaleString();
 
-      const tdExpires = document.createElement("td");
-      tdExpires.textContent = new Date(f.expires_at).toLocaleString();
-
       const tdDownloads = document.createElement("td");
       tdDownloads.textContent = f.download_count;
 
       const tdActions = document.createElement("td");
+      tdActions.style.display = "flex";
+      tdActions.style.gap = "8px";
+
+      const copyBtn = document.createElement("button");
+      copyBtn.className = "secondary";
+      copyBtn.textContent = "Yo'lni nusxalash";
+      copyBtn.addEventListener("click", () => copyPath(f.path, copyBtn));
+
       const delBtn = document.createElement("button");
       delBtn.className = "danger";
-      delBtn.textContent = "Delete";
+      delBtn.textContent = "O'chirish";
       delBtn.addEventListener("click", () => deleteFile(f.token));
-      tdActions.appendChild(delBtn);
 
-      tr.append(tdName, tdSize, tdUploaded, tdExpires, tdDownloads, tdActions);
+      tdActions.append(copyBtn, delBtn);
+      tr.append(tdName, tdSize, tdUploaded, tdDownloads, tdActions);
       body.appendChild(tr);
     }
   }
 
+  async function copyPath(path, btn) {
+    const original = btn.textContent;
+    try {
+      await navigator.clipboard.writeText(path);
+      btn.textContent = "Nusxalandi!";
+    } catch {
+      btn.textContent = path;
+    }
+    setTimeout(() => (btn.textContent = original), 1500);
+  }
+
   async function deleteFile(token) {
-    if (!confirm("Delete this file? This cannot be undone.")) return;
+    if (!confirm("Bu faylni o'chirasizmi? Bu amalni orqaga qaytarib bo'lmaydi.")) return;
     const adminToken = tokenInput.value.trim();
     const res = await fetch(`/api/admin/files/${token}`, {
       method: "DELETE",
@@ -92,7 +108,7 @@
     if (res.ok) {
       loadFiles();
     } else {
-      alert(`Failed to delete (${res.status})`);
+      alert(`O'chirib bo'lmadi (${res.status})`);
     }
   }
 

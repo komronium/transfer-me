@@ -71,7 +71,7 @@ def _run_cleanup_once() -> None:
 
 def require_admin(x_admin_token: str | None = Header(default=None)) -> None:
     if not x_admin_token or not secrets.compare_digest(x_admin_token, config.ADMIN_TOKEN):
-        raise HTTPException(status_code=403, detail="Invalid admin token")
+        raise HTTPException(status_code=403, detail="Noto'g'ri admin token")
 
 
 # ---------------------------------------------------------------------------
@@ -94,14 +94,14 @@ class InitUploadResponse(BaseModel):
 async def init_upload(body: InitUploadRequest, request: Request, _rl: None = Depends(enforce_init_rate_limit)):
     if body.size > config.MAX_FILE_SIZE_BYTES:
         max_gb = config.MAX_FILE_SIZE_BYTES / 1024 ** 3
-        raise HTTPException(status_code=413, detail=f"File exceeds max size of {max_gb:.0f} GB")
+        raise HTTPException(status_code=413, detail=f"Fayl hajmi {max_gb:.0f} GB dan katta")
 
     chunk_size = body.chunk_size or config.DEFAULT_CHUNK_SIZE_BYTES
     chunk_size = max(1024 * 1024, min(chunk_size, config.MAX_CHUNK_SIZE_BYTES))
 
     filename = body.filename.strip().replace("/", "_").replace("\\", "_")
     if not filename:
-        raise HTTPException(status_code=400, detail="Invalid filename")
+        raise HTTPException(status_code=400, detail="Fayl nomi noto'g'ri")
 
     meta = storage.create_upload(filename=filename, size=body.size, chunk_size=chunk_size)
     return InitUploadResponse(upload_id=meta.upload_id, chunk_size=meta.chunk_size, total_chunks=meta.total_chunks)
@@ -111,7 +111,7 @@ async def init_upload(body: InitUploadRequest, request: Request, _rl: None = Dep
 async def get_upload(upload_id: str):
     meta = storage.load_upload(upload_id)
     if meta is None:
-        raise HTTPException(status_code=404, detail="Upload not found (it may have expired or completed)")
+        raise HTTPException(status_code=404, detail="Yuklash topilmadi (yakunlangan yoki bekor qilingan bo'lishi mumkin)")
     return {**meta.to_dict(), "received": storage.received_chunks(upload_id)}
 
 
@@ -119,16 +119,16 @@ async def get_upload(upload_id: str):
 async def upload_chunk(upload_id: str, index: int, request: Request):
     meta = storage.load_upload(upload_id)
     if meta is None:
-        raise HTTPException(status_code=404, detail="Upload not found (it may have expired or completed)")
+        raise HTTPException(status_code=404, detail="Yuklash topilmadi (yakunlangan yoki bekor qilingan bo'lishi mumkin)")
     if index < 0 or index >= meta.total_chunks:
-        raise HTTPException(status_code=400, detail="Chunk index out of range")
+        raise HTTPException(status_code=400, detail="Bo'lak raqami chegaradan tashqarida")
 
     body = await request.body()
     expected = storage.expected_chunk_size(meta, index)
     if len(body) != expected:
         raise HTTPException(
             status_code=400,
-            detail=f"Chunk {index} size mismatch: expected {expected} bytes, got {len(body)}",
+            detail=f"{index}-bo'lak hajmi mos kelmadi: kutilgan {expected} bayt, kelgan {len(body)} bayt",
         )
 
     await asyncio.to_thread(storage.write_chunk, upload_id, index, body)
@@ -145,16 +145,19 @@ class CompleteUploadResponse(BaseModel):
 async def complete_upload(upload_id: str, request: Request):
     meta = storage.load_upload(upload_id)
     if meta is None:
-        raise HTTPException(status_code=404, detail="Upload not found (it may have expired or completed)")
+        raise HTTPException(status_code=404, detail="Yuklash topilmadi (yakunlangan yoki bekor qilingan bo'lishi mumkin)")
 
     if not await asyncio.to_thread(storage.all_chunks_present, meta):
-        raise HTTPException(status_code=409, detail="Not all chunks have been received yet")
+        raise HTTPException(status_code=409, detail="Hali barcha bo'laklar qabul qilinmagan")
 
     token = secrets.token_urlsafe(16)
-    dest = storage.file_dest_path(token)
+    dest = storage.file_dest_path(token, meta.filename)
     await asyncio.to_thread(storage.merge_chunks, meta, dest)
 
-    expires_at = (datetime.now(timezone.utc) + timedelta(hours=config.DEFAULT_EXPIRY_HOURS)).isoformat()
+    if config.DEFAULT_EXPIRY_HOURS > 0:
+        expires_at = (datetime.now(timezone.utc) + timedelta(hours=config.DEFAULT_EXPIRY_HOURS)).isoformat()
+    else:
+        expires_at = config.NEVER_EXPIRES_AT
     db.insert_file(token=token, filename=meta.filename, size=meta.size, stored_path=str(dest), expires_at=expires_at)
 
     await asyncio.to_thread(storage.purge_upload, upload_id)
@@ -176,11 +179,11 @@ async def abort_upload(upload_id: str):
 def _get_active_file_or_404(token: str) -> db.sqlite3.Row:
     row = db.get_file(token)
     if row is None:
-        raise HTTPException(status_code=404, detail="File not found")
+        raise HTTPException(status_code=404, detail="Fayl topilmadi")
     if row["expires_at"] < db.now_iso():
         storage.purge_file(token)
         db.delete_file(token)
-        raise HTTPException(status_code=404, detail="File has expired")
+        raise HTTPException(status_code=404, detail="Faylning muddati tugagan")
     return row
 
 
@@ -221,8 +224,8 @@ async def admin_list_files():
             "filename": r["filename"],
             "size": r["size"],
             "uploaded_at": r["uploaded_at"],
-            "expires_at": r["expires_at"],
             "download_count": r["download_count"],
+            "path": r["stored_path"],
         }
         for r in rows
     ]
@@ -232,7 +235,7 @@ async def admin_list_files():
 async def admin_delete_file(token: str):
     row = db.get_file(token)
     if row is None:
-        raise HTTPException(status_code=404, detail="File not found")
+        raise HTTPException(status_code=404, detail="Fayl topilmadi")
     storage.purge_file(token)
     db.delete_file(token)
     return {"ok": True}

@@ -149,8 +149,8 @@ def purge_file(token: str) -> None:
         shutil.rmtree(d, ignore_errors=True)
 
 
-def file_dest_path(token: str) -> Path:
-    return config.FILES_DIR / token / "blob"
+def file_dest_path(token: str, filename: str) -> Path:
+    return config.FILES_DIR / token / filename
 
 
 def sweep_abandoned_uploads(max_age_seconds: float) -> int:

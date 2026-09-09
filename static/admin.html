@@ -1,9 +1,12 @@
 <!doctype html>
-<html lang="en">
+<html lang="uz">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>transfer-me &mdash; admin</title>
+  <title>Admin &mdash; transfer-me</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/assets/css/style.css">
   <style>
     body { align-items: flex-start; padding-top: 48px; }
@@ -12,8 +15,8 @@
 <body>
   <div class="wrap admin-wrap">
     <div class="top-row">
-      <h1 class="title" style="margin:0;">Files</h1>
-      <button id="refreshBtn" class="secondary">Refresh</button>
+      <h1 class="title" style="margin:0;">Fayllar</h1>
+      <button id="refreshBtn" class="secondary">Yangilash</button>
     </div>
     <div class="card">
       <input id="tokenInput" class="token-input" type="password" placeholder="Admin token">
@@ -21,11 +24,10 @@
       <table class="files" id="filesTable" hidden>
         <thead>
           <tr>
-            <th>Filename</th>
-            <th>Size</th>
-            <th>Uploaded</th>
-            <th>Expires</th>
-            <th>Downloads</th>
+            <th>Fayl nomi</th>
+            <th>Hajmi</th>
+            <th>Yuklangan vaqti</th>
+            <th>Yuklab olingan</th>
             <th></th>
           </tr>
         </thead>

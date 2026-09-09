@@ -1,31 +1,33 @@
 <!doctype html>
-<html lang="en">
+<html lang="uz">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>transfer-me &mdash; download</title>
+  <title>Yuklab olish &mdash; transfer-me</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/assets/css/style.css">
 </head>
 <body>
   <div class="wrap">
-    <h1 class="title">Download</h1>
+    <h1 class="title">Yuklab olish</h1>
     <div class="card">
-      <div id="loading" class="muted" style="text-align:center;">Loading&hellip;</div>
+      <div id="loading" class="muted" style="text-align:center;">Yuklanmoqda&hellip;</div>
 
       <div id="notFound" class="finished" hidden>
-        <div class="check" style="color:var(--danger);">&#10007;</div>
-        <h2>File not found</h2>
-        <div class="muted">This link is invalid or has expired.</div>
+        <div class="check">&#10060;</div>
+        <h2>Fayl topilmadi</h2>
+        <div class="sub">Bu havola noto'g'ri yoki fayl o'chirilgan.</div>
       </div>
 
       <div id="found" class="finished" hidden>
         <div class="check">&#128190;</div>
         <h2 id="dlName"></h2>
-        <div class="muted" id="dlMeta"></div>
-        <div class="actions" style="justify-content:center; margin-top:22px;">
-          <button id="dlBtn" class="primary">Download</button>
+        <div class="sub" id="dlMeta"></div>
+        <div class="actions" style="justify-content:center; margin-top:24px;">
+          <button id="dlBtn" class="primary">Yuklab olish</button>
         </div>
-        <div class="expiry-note" id="dlExpiry"></div>
       </div>
     </div>
   </div>

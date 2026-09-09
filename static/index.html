@@ -1,22 +1,25 @@
 <!doctype html>
-<html lang="en">
+<html lang="uz">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>transfer-me</title>
+  <title>Fayl yuborish</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/assets/css/style.css">
 </head>
 <body>
   <div class="wrap">
-    <h1 class="title">Send a file</h1>
+    <h1 class="title">Fayl yuborish</h1>
     <div class="card">
       <div id="dropzone" class="dropzone">
-        <div class="icon">&#8593;</div>
-        <div class="primary">Drop file here</div>
-        <div class="secondary">or click to choose a file</div>
+        <div class="icon">&#128228;</div>
+        <div class="primary">Faylni shu yerga tashlang</div>
+        <div class="secondary">yoki tanlash uchun bosing</div>
         <input id="fileInput" type="file">
       </div>
-      <div class="hint" id="sizeHint">Up to 10 GB</div>
+      <div class="hint" id="sizeHint">10 GB gacha</div>
 
       <div id="progressView" class="progress-view" hidden>
         <div class="file-row">
@@ -31,22 +34,17 @@
         </div>
         <div id="pvError" class="error-box" hidden></div>
         <div class="actions">
-          <button id="pvCancel" class="secondary">Cancel</button>
-          <button id="pvPauseResume" class="secondary">Pause</button>
+          <button id="pvCancel" class="secondary">Bekor qilish</button>
+          <button id="pvPauseResume" class="secondary">To'xtatish</button>
         </div>
       </div>
 
       <div id="finishedView" class="finished" hidden>
-        <div class="check">&#10003;</div>
-        <h2>File ready</h2>
-        <div class="muted">Share this link</div>
-        <div class="link-box">
-          <input id="shareLink" type="text" readonly>
-          <button id="copyBtn" class="secondary">Copy</button>
-        </div>
-        <div class="expiry-note" id="expiryNote"></div>
-        <div class="actions" style="justify-content:center; margin-top:18px;">
-          <button id="sendAnother" class="primary">Send another file</button>
+        <div class="check">&#9989;</div>
+        <h2>Yuklandi!</h2>
+        <div class="sub" id="finishedSub"></div>
+        <div class="actions" style="justify-content:center; margin-top:24px;">
+          <button id="sendAnother" class="primary">Yana fayl yuborish</button>
         </div>
       </div>
     </div>

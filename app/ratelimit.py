@@ -29,5 +29,5 @@ def enforce_init_rate_limit(request: Request) -> None:
         while dq and now - dq[0] > window:
             dq.popleft()
         if len(dq) >= limit:
-            raise HTTPException(status_code=429, detail="Too many uploads started. Please slow down.")
+            raise HTTPException(status_code=429, detail="Juda ko'p yuklash boshlandi. Birozdan so'ng qayta urinib ko'ring.")
         dq.append(now)

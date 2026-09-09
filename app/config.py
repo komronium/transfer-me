@@ -20,8 +20,9 @@ MAX_FILE_SIZE_BYTES = int(os.environ.get("MAX_FILE_SIZE_GB", "10")) * 1024 ** 3
 MAX_CHUNK_SIZE_BYTES = int(os.environ.get("MAX_CHUNK_SIZE_MB", "64")) * 1024 ** 2
 DEFAULT_CHUNK_SIZE_BYTES = int(os.environ.get("CHUNK_SIZE_MB", "16")) * 1024 ** 2
 
-DEFAULT_EXPIRY_HOURS = int(os.environ.get("DEFAULT_EXPIRY_HOURS", "24"))
-MAX_EXPIRY_HOURS = int(os.environ.get("MAX_EXPIRY_HOURS", "168"))  # 7 days cap
+# 0 means files are kept forever (until deleted manually via /admin or disk).
+DEFAULT_EXPIRY_HOURS = int(os.environ.get("DEFAULT_EXPIRY_HOURS", "0"))
+NEVER_EXPIRES_AT = "9999-12-31T00:00:00+00:00"
 
 # Abandoned in-progress uploads older than this are purged
 ABANDONED_UPLOAD_HOURS = int(os.environ.get("ABANDONED_UPLOAD_HOURS", "48"))

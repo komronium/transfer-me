@@ -34,9 +34,7 @@
     found.hidden = false;
     document.getElementById("dlName").textContent = info.filename;
     document.getElementById("dlMeta").textContent =
-      `${fmtBytes(info.size)} · ${info.download_count} download${info.download_count === 1 ? "" : "s"}`;
-    const expires = new Date(info.expires_at);
-    document.getElementById("dlExpiry").textContent = `Expires ${expires.toLocaleString()}`;
+      `${fmtBytes(info.size)} · ${info.download_count} marta yuklab olingan`;
 
     document.getElementById("dlBtn").addEventListener("click", () => {
       window.location.href = `/api/files/${token}/download`;
