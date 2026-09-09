@@ -71,31 +71,22 @@
       tdActions.style.display = "flex";
       tdActions.style.gap = "8px";
 
-      const copyBtn = document.createElement("button");
-      copyBtn.className = "secondary";
-      copyBtn.textContent = "Yo'lni nusxalash";
-      copyBtn.addEventListener("click", () => copyPath(f.path, copyBtn));
+      const downloadLink = document.createElement("a");
+      downloadLink.className = "secondary";
+      downloadLink.textContent = "Yuklab olish";
+      downloadLink.href = `/api/files/${f.token}/download`;
+      downloadLink.style.textDecoration = "none";
+      downloadLink.style.display = "inline-block";
 
       const delBtn = document.createElement("button");
       delBtn.className = "danger";
       delBtn.textContent = "O'chirish";
       delBtn.addEventListener("click", () => deleteFile(f.token));
 
-      tdActions.append(copyBtn, delBtn);
+      tdActions.append(downloadLink, delBtn);
       tr.append(tdName, tdSize, tdUploaded, tdDownloads, tdActions);
       body.appendChild(tr);
     }
-  }
-
-  async function copyPath(path, btn) {
-    const original = btn.textContent;
-    try {
-      await navigator.clipboard.writeText(path);
-      btn.textContent = "Nusxalandi!";
-    } catch {
-      btn.textContent = path;
-    }
-    setTimeout(() => (btn.textContent = original), 1500);
   }
 
   async function deleteFile(token) {
